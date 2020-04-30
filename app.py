@@ -267,8 +267,8 @@ def update_room(id):
     gName = room1.get("gName")
     gTopic = room1.get("gTopic")
     gDescription = room1.get("gDescription")
-    image_file = request.files.get("photo")
-    print(image_file)
+    # image_file = request.files.get("photo")
+    # print(image_file)
     a1 = Room.query.filter(Room.id == id).first()
     if not a1:
         abort(404)
@@ -278,13 +278,13 @@ def update_room(id):
         a1.gTopic = gTopic
     if len(gDescription) >0:
         a1.gDescription = gDescription
-    if image_file != '':
-        base_url = os.path.dirname(os.path.dirname(__file__))
-        image_name = image_file.filename
-        total_url = os.path.join(base_url, 'thefifith\dist\image', image_name)
-        url = image_name
-        a1.photo = url
-        image_file.save(total_url)
+    # if image_file != '':
+    #     base_url = os.path.dirname(os.path.dirname(__file__))
+    #     image_name = image_file.filename
+    #     total_url = os.path.join(base_url, 'thefifith\dist\image', image_name)
+    #     url = image_name
+    #     a1.photo = url
+    #     image_file.save(total_url)
 
     db.session.commit()
     return jsonify({'status': 'ok'})
@@ -292,9 +292,10 @@ def update_room(id):
 #修改群头像
 @app.route('/chat/updateRoom_photo/<id>',methods=['POST'])
 def update_room_photo(id):
+    roomid = id
     image_file = request.files.get("photo")
     print(image_file)
-    a1 = Room.query.filter(Room.id == id).first()
+    a1 = Room.query.filter(Room.id == roomid).first()
     if not a1:
         abort(404)
     if image_file != '':
@@ -305,7 +306,7 @@ def update_room_photo(id):
         a1.photo = url
         image_file.save(total_url)
     db.session.commit()
-    return jsonify({'avatarName': url})
+    return jsonify({'photoName': url})
 
 #删除房间
 @app.route('/chat/deleteRoom/<id>',methods=['DELETE'])
@@ -385,26 +386,34 @@ def outRoom():
 
 
 
-# socketio.on('connect')
-# def login(socket):
+# @socketio.on('connect')
+# def login():
 #     gl.online_num += 1
-#     print('Num:' + gl.online_num)
-# socketio.on('disconnect')
-# def logout(socket):
-#     gl.online_num -= 1
-#
-# socketio.on('user')
-# def user():
-#     print('Num:' + gl.online_num)
+#     print('Num:%s' % gl.online_num)
+#     emit('respond', {'num': gl.online_num})
 #     send(gl.online_num, broadcast=True)
+#
+# @socketio.on('disconnect')
+# def logout():
+#     gl.online_num -= 1
+#     print('Num:%s' % gl.online_num)
+#     # send(gl.online_num, broadcast=True)
+#     emit('respond', {'num': gl.online_num})
+#
+#
+# @socketio.on('user')
+# def user():
+#     print('Num:%s' % gl.online_num)
+#     # send(gl.online_num, broadcast=True)
+#     emit('connect', {'Num': gl.online_num})
 
-socketio.on('message')
+@socketio.on('message')
 def handleMessage(msg):
-    print('Message:'+msg)
+    print('Message:%s'%msg)
     send(msg, broadcast=True)
 
 if __name__ == '__main__':
-    socketio.run(app, host='127.0.0.1', port=9000, debug=True)
+    socketio.run(app, host='127.0.0.1', port=5000, debug=True)
     #app.run(debug=True)
 
 
